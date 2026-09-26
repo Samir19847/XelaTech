@@ -24,3 +24,10 @@ class EstadoSolicitud(Enum):
     LISTA_PARA_ENTREGAR = "Lista para entregar"
     ENTREGADA = "Entregada"
     CANCELADA = "Cancelada"
+class CategoriaRepuesto(Enum):
+    ALMACENAMIENTO = "Almacenamiento"
+    MEMORIA_RAM = "Memoria RAM"
+    PANTALLAS = "Pantallas y Displays"
+    PERIFERICOS = "Periféricos y Consumibles"
+    COMPONENTES_INTERNOS = "Componentes Internos"
+    ACCESORIOS_CONSOLAS = "Accesorios y Repuestos de Consolas"
