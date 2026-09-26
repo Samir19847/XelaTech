@@ -1,12 +1,14 @@
 from Entidades.Persona import Persona
+from Entidades.Enum import TipoCliente
 
 class Cliente(Persona):
-    def __init__(self, código: str, nombreCompleto: str, telefono: str, correoElectronico: str, tipoCliente: str, cantidadSolicitudes: int = 0):
+    def __init__(self, código: str, nombreCompleto: str, telefono: str, correoElectronico: str, tipoCliente: TipoCliente, cantidadSolicitudes: int = 0):
         super().__init__(código, nombreCompleto)
         self.telefono = telefono
         self.correoElectronico = correoElectronico
         self.tipoCliente = tipoCliente
         self.cantidadSolicitudes = cantidadSolicitudes
+
     @property
     def telefono(self) -> str:
         return self._telefono
@@ -31,10 +33,10 @@ class Cliente(Persona):
     def tipoCliente(self) -> str:
         return self._tipoCliente
     @tipoCliente.setter
-    def tipoCliente(self, tipoCliente: str):
-        if not tipoCliente.strip():
-            raise ValueError("El tipo de cliente no puede estar vacío.")
-        self._tipoCliente = tipoCliente
+    def tipoCliente(self, valor: TipoCliente):
+        if not isinstance(valor, TipoCliente):
+            raise ValueError("El tipo de cliente debe ser una opción válida de TipoCliente.")
+        self._tipoCliente = valor
 
     @property
     def cantidadSolicitudes(self) -> int:

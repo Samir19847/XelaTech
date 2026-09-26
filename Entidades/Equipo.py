@@ -1,7 +1,7 @@
 from Entidades.Cliente import Cliente
-
+from Entidades.Enum import TipoEquipo
 class Equipo:
-    def __init__(self, codigoInterno: str, numeroSerie: str, marca: str, modelo: str, propietario: Cliente, tipoEquipo: str, estadoFisico: str, accesoriosEntregados: str):
+    def __init__(self, codigoInterno: str, numeroSerie: str, marca: str, modelo: str, propietario: Cliente, tipoEquipo: TipoEquipo, estadoFisico: str, accesoriosEntregados: str):
         self.codigoInterno = codigoInterno
         self.numeroSerie = numeroSerie
         self.marca = marca
@@ -61,9 +61,9 @@ class Equipo:
     def tipoEquipo(self) -> str:
         return self._tipoEquipo
     @tipoEquipo.setter
-    def tipoEquipo(self, valor: str):
-        if not valor.strip():
-            raise ValueError("El tipo de equipo no puede estar vacío.")
+    def tipoEquipo(self, valor: TipoEquipo):
+        if not isinstance(valor, TipoEquipo):
+            raise ValueError("El tipo de equipo debe ser una opción válida de TipoEquipo.")
         self._tipoEquipo = valor
 
     @property
