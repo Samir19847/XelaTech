@@ -8,6 +8,9 @@ class PilaHistorial:
     def Apilar(self, estado: EstadoSolicitud):
         self._items.append(estado)
 
+    def esta_vacia(self) -> bool:
+        return len(self._items) == 0
+
     def Desapilar(self)->EstadoSolicitud:
         if self.esta_vacia():
             raise ValueError("No se hay estados anteriores en el historial para deshacer.")
