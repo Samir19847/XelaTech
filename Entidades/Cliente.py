@@ -47,3 +47,5 @@ class Cliente(Persona):
         if not isinstance(cantidadSolicitudes, int) or cantidadSolicitudes < 0:
             raise ValueError("La cantidad de solicitudes debe ser un número entero mayor o igual a 0.")
         self._cantidadSolicitudes = cantidadSolicitudes
+    def incrementar_solicitudes(self):
+        self.cantidadSolicitudes = self.cantidadSolicitudes + 1
