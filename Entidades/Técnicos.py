@@ -80,3 +80,8 @@ class Tecnico(Persona):
         if nueva_calificacion is not None:
             total = (self.calificacionPromedio * (self.serviciosFinalizados - 1)) + nueva_calificacion
             self.calificacionPromedio = total / self.serviciosFinalizados
+
+    def liberar_trabajo(self):
+        if self.trabajosActivos <= 0:
+            raise ValueError("El técnico no tiene trabajos activos para liberar.")
+        self.trabajosActivos -= 1
