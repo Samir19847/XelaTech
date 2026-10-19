@@ -1,7 +1,9 @@
 from Entidades.Equipo import Equipo
 from Entidades.Cliente import Cliente
+from Entidades.Enum import TipoEquipo
 
 class ComputadoraEscritorio(Equipo):
+    ESPECIALIDAD_REQUERIDA = "Computadoras de Escritorio"
     def __init__(
         self,
         codigoInterno: str,
@@ -13,7 +15,10 @@ class ComputadoraEscritorio(Equipo):
         accesoriosEntregados: str,
         tipoGabinete: str = "Mid Tower"
     ):
-        super().__init__(codigoInterno, numeroSerie, marca, modelo, propietario, "Computadora de Escritorio", estadoFisico, accesoriosEntregados)
+        super().__init__(
+            codigoInterno, numeroSerie, marca, modelo, propietario,
+            TipoEquipo.COMPUTADORA_ESCRITORIO, estadoFisico, accesoriosEntregados
+        )
         self.tipoGabinete = tipoGabinete
 
     @property

@@ -1,7 +1,9 @@
 from Entidades.Equipo import Equipo
 from Entidades.Cliente import Cliente
+from Entidades.Enum import TipoEquipo
 
 class Consola(Equipo):
+    ESPECIALIDAD_REQUERIDA = "Consolas de Videojuegos"
     def __init__(
         self,
         codigoInterno: str,
@@ -13,7 +15,10 @@ class Consola(Equipo):
         accesoriosEntregados: str,
         cantidadMandos: int = 1
     ):
-        super().__init__(codigoInterno, numeroSerie, marca, modelo, propietario, "Consola de Videojuegos", estadoFisico, accesoriosEntregados)
+        super().__init__(
+            codigoInterno, numeroSerie, marca, modelo, propietario,
+            TipoEquipo.CONSOLA, estadoFisico, accesoriosEntregados
+        )
         self.cantidadMandos = cantidadMandos
 
     @property
@@ -27,4 +32,3 @@ class Consola(Equipo):
 
     def calcular_costo_revision(self) -> float:
         return 135.0
-    

@@ -1,7 +1,14 @@
+from abc import ABC, abstractmethod
 from Entidades.Cliente import Cliente
 from Entidades.Enum import TipoEquipo
-class Equipo:
-    def __init__(self, codigoInterno: str, numeroSerie: str, marca: str, modelo: str, propietario: Cliente, tipoEquipo: TipoEquipo, estadoFisico: str, accesoriosEntregados: str):
+
+
+class Equipo(ABC):
+    ESPECIALIDAD_REQUERIDA: str = ""
+
+    def __init__(self, codigoInterno: str, numeroSerie: str, marca: str,
+                 modelo: str, propietario: Cliente, tipoEquipo: TipoEquipo,
+                 estadoFisico: str, accesoriosEntregados: str):
         self.codigoInterno = codigoInterno
         self.numeroSerie = numeroSerie
         self.marca = marca
@@ -58,7 +65,7 @@ class Equipo:
         self._propietario = valor
 
     @property
-    def tipoEquipo(self) -> str:
+    def tipoEquipo(self) -> TipoEquipo:
         return self._tipoEquipo
     @tipoEquipo.setter
     def tipoEquipo(self, valor: TipoEquipo):
@@ -84,5 +91,15 @@ class Equipo:
             raise ValueError("Los accesorios entregados no pueden estar vacíos.")
         self._accesoriosEntregados = valor
 
+    @property
+    def especialidadRequerida(self) -> str:
+        """Especialidad del técnico que debe atender este tipo de equipo."""
+        if not self.ESPECIALIDAD_REQUERIDA.strip():
+            raise ValueError(
+                f"La subclase {type(self).__name__} no definió ESPECIALIDAD_REQUERIDA."
+            )
+        return self.ESPECIALIDAD_REQUERIDA
+    
+    @abstractmethod
     def calcular_costo_revision(self) -> float:
-        return 100.0
+        """Costo base de revisión del equipo. Debe implementarse en cada subclase."""

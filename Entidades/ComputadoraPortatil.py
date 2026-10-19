@@ -1,7 +1,9 @@
 from Entidades.Equipo import Equipo
 from Entidades.Cliente import Cliente
+from Entidades.Enum import TipoEquipo
 
 class ComputadoraPortatil(Equipo):
+    ESPECIALIDAD_REQUERIDA = "Computadoras Portátiles"
     def __init__(
         self,
         codigoInterno: str,
@@ -13,7 +15,10 @@ class ComputadoraPortatil(Equipo):
         accesoriosEntregados: str,
         incluyeCargador: bool = True
     ):
-        super().__init__(codigoInterno, numeroSerie, marca, modelo, propietario, "Computadora Portátil", estadoFisico, accesoriosEntregados)
+        super().__init__(
+            codigoInterno, numeroSerie, marca, modelo, propietario,
+            TipoEquipo.COMPUTADORA_PORTATIL, estadoFisico, accesoriosEntregados
+        )
         self.incluyeCargador = incluyeCargador
 
     @property
