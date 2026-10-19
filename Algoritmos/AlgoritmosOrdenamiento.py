@@ -1,11 +1,17 @@
 from typing import List, Callable, Any
 
 class AlgoritmosOrdenamiento:
+    BUBBLE_SORT = "Bubble Sort"
+    SHELL_SORT = "Shell Sort"
+
     @staticmethod
-    def bubble_sort(lista: List[Any], key: Callable[[Any], Any] = lambda x: x, descendente: bool = False) -> List[Any]:
+    def bubble_sort(lista: List[Any],
+                    key: Callable[[Any], Any] = lambda x: x,
+                    descendente: bool = False) -> List[Any]:
+        if len(lista) < 2:
+            return lista.copy()
         n = len(lista)
         lista_ordenada = lista.copy()
-        
         for i in range(n):
             intercambio = False
             for j in range(0, n - i - 1):
@@ -20,11 +26,14 @@ class AlgoritmosOrdenamiento:
         return lista_ordenada
     
     @staticmethod
-    def shell_sort(lista: List[Any], key: Callable[[Any], Any] = lambda x: x, descendente: bool = False) -> List[Any]:
+    def shell_sort(lista: List[Any],
+                   key: Callable[[Any], Any] = lambda x: x,
+                   descendente: bool = False) -> List[Any]:
+        if len(lista) < 2:
+            return lista.copy()
         n = len(lista)
         lista_ordenada = lista.copy()
         brecha = n // 2
-        
         while brecha > 0:
             for i in range(brecha, n):
                 temp = lista_ordenada[i]
@@ -38,8 +47,11 @@ class AlgoritmosOrdenamiento:
                         j -= brecha
                     else:
                         break
-                        
                 lista_ordenada[j] = temp
             brecha //= 2
-            
         return lista_ordenada
+
+    @staticmethod
+    def describir_ordenamiento(algoritmo: str, criterio: str, descendente: bool) -> str:
+        orden = "descendente" if descendente else "ascendente"
+        return f"Algoritmo: {algoritmo} | Criterio: {criterio} | Orden: {orden}"
