@@ -2,14 +2,19 @@ from Entidades.Persona import Persona
 
 class Tecnico(Persona):
     LIMITE_TRABAJOS_ACTIVOS: int = 3
-    def __init__(self, código: str, nombreCompleto: str, especialidad: str, disponible: bool = True, trabajosActivos: int = 0, serviciosFinalizados: int = 0, calificacionPromedio: float = 0.0):
+    def __init__(self, código: str, nombreCompleto: str, especialidad: str,
+                 disponible: bool = True, trabajosActivos: int = 0,
+                 serviciosFinalizados: int = 0, calificacionPromedio: float = 0.0,
+                 numCalificaciones: int = 0):
         super().__init__(código, nombreCompleto)
         self.especialidad = especialidad
         self.disponible = disponible
         self.trabajosActivos = trabajosActivos
         self.serviciosFinalizados = serviciosFinalizados
         self.calificacionPromedio = calificacionPromedio
-
+        if self._calificacionPromedio > 0 and numCalificaciones == 0:
+            numCalificaciones = 1
+        self.numCalificaciones = numCalificaciones
     @property
     def especialidad(self) -> str:
         return self._especialidad
@@ -61,22 +66,36 @@ class Tecnico(Persona):
             raise ValueError("La calificación promedio debe estar entre 0.0 y 5.0.")
         self._calificacionPromedio = float(calificacion)
 
+    @property
+    def numCalificaciones(self) -> int:
+        return self._numCalificaciones
+    @numCalificaciones.setter
+    def numCalificaciones(self, cantidad: int):
+        if not isinstance(cantidad, int) or cantidad < 0:
+            raise ValueError("La cantidad de calificaciones debe ser un número entero mayor o igual a 0.")
+        self._numCalificaciones = cantidad
+
     def puede_recibir_solicitud(self) -> bool:
         return self.disponible and (self.trabajosActivos < Tecnico.LIMITE_TRABAJOS_ACTIVOS)
-    
+
     def asignar_trabajo(self):
         if not self.puede_recibir_solicitud():
-            raise ValueError(f"No se puede asignar la solicitud. El técnico está indisponible o alcanzó el límite de {Tecnico.LIMITE_TRABAJOS_ACTIVOS} trabajos activos.")
+            raise ValueError(
+                f"No se puede asignar la solicitud. El técnico está indisponible o alcanzó el límite "
+                f"de {Tecnico.LIMITE_TRABAJOS_ACTIVOS} trabajos activos."
+            )
         self.trabajosActivos += 1
-        if self.trabajosActivos == Tecnico.LIMITE_TRABAJOS_ACTIVOS:
-            self.disponible = False
 
     def finalizar_trabajo(self, nueva_calificacion: float = None):
         if self.trabajosActivos <= 0:
             raise ValueError("El técnico no tiene trabajos activos para finalizar.")
         self.trabajosActivos -= 1
         self.serviciosFinalizados += 1
-        self.disponible = True
         if nueva_calificacion is not None:
-            total = (self.calificacionPromedio * (self.serviciosFinalizados - 1)) + nueva_calificacion
-            self.calificacionPromedio = total / self.serviciosFinalizados
+            if not isinstance(nueva_calificacion, (int, float)):
+                raise ValueError("La nueva calificación debe ser un valor numérico.")
+            if not (0.0 <= nueva_calificacion <= 5.0):
+                raise ValueError("La nueva calificación debe estar entre 0.0 y 5.0.")
+            total = (self.calificacionPromedio * self.numCalificaciones) + nueva_calificacion
+            self.numCalificaciones += 1
+            self.calificacionPromedio = total / self.numCalificaciones
