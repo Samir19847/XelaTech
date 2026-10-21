@@ -37,7 +37,7 @@ class Solicitud:
         EstadoSolicitud.ENTREGADA: set(),
         EstadoSolicitud.CANCELADA: set(),
     }
-
+    ESTADOS_FINALES = {EstadoSolicitud.ENTREGADA, EstadoSolicitud.CANCELADA}
     def __init__(
         self,
         codigoSolicitud: str,
@@ -48,14 +48,14 @@ class Solicitud:
         tecnico: Optional[Tecnico] = None,
         costoManoObra: float = 0.0,
     ):
+        self._historial = PilaHistorial()
+        self._estado = EstadoSolicitud.RECIBIDA
         self.codigoSolicitud = codigoSolicitud
         self.cliente = cliente
         self.equipo = equipo
         self.descripcionProblema = descripcionProblema
         self.fechaHoraRecepcion = datetime.now()
         self.prioridad = prioridad
-        self._historial = PilaHistorial()
-        self.estado = EstadoSolicitud.RECIBIDA
         self.tecnico = tecnico
         self.diagnostico = ""
         self.repuestosUtilizados: List[DetalleRepuesto] = []
@@ -110,11 +110,6 @@ class Solicitud:
     @property
     def estado(self) -> EstadoSolicitud:
         return self._estado
-    @estado.setter
-    def estado(self, valor: EstadoSolicitud):
-        if not isinstance(valor, EstadoSolicitud):
-            raise ValueError("El estado debe ser una instancia del Enum EstadoSolicitud.")
-        self._estado = valor
 
     @property
     def tecnico(self) -> Optional[Tecnico]:
@@ -130,6 +125,7 @@ class Solicitud:
         return self._diagnostico
     @diagnostico.setter
     def diagnostico(self, valor: str):
+        self._exigir_modificable()
         if not isinstance(valor, str):
             raise ValueError("El diagnóstico debe ser una cadena de texto.")
         self._diagnostico = valor.strip()
@@ -139,6 +135,7 @@ class Solicitud:
         return self._costoManoObra
     @costoManoObra.setter
     def costoManoObra(self, valor: float):
+        self._exigir_modificable()
         if not isinstance(valor, (int, float)) or isinstance(valor, bool) or valor < 0:
             raise ValueError("El costo de mano de obra debe ser un valor numérico mayor o igual a 0.")
         self._costoManoObra = float(valor)
@@ -150,6 +147,10 @@ class Solicitud:
     def total(self) -> float:
         costo_revision = self.equipo.calcular_costo_revision()
         return self.costoManoObra + self.costoRepuestos + costo_revision
+
+    def _exigir_modificable(self):
+        if self._estado in Solicitud.ESTADOS_FINALES:
+            raise ValueError(f"La solicitud está '{self._estado.value}' y ya no admite cambios.")
 
     def CambiarEstado(self, nuevo_estado: EstadoSolicitud):
         if not isinstance(nuevo_estado, EstadoSolicitud):
@@ -165,12 +166,11 @@ class Solicitud:
         self._estado = nuevo_estado
 
     def DeshacerEstado(self):
-        """Restaura el estado previo. Si se sale de 'Asignada', libera al técnico."""
+        self._exigir_modificable()
         if self._historial.esta_vacia():
             raise ValueError("No hay estados anteriores en el historial para deshacer.")
         estado_previo = self._historial.Desapilar()
 
-        # Salir de ASIGNADA libera al técnico (no completó el servicio).
         if self._estado == EstadoSolicitud.ASIGNADA and self._tecnico is not None:
             self._tecnico.liberar_trabajo()
             self._tecnico = None
@@ -198,6 +198,11 @@ class Solicitud:
         nuevo_tecnico.asignar_trabajo()
 
     def agregar_repuesto(self, repuesto: Repuestos, cantidad: int):
+        self._exigir_modificable()
+        if self._estado not in {EstadoSolicitud.EN_DIAGNOSTICO, EstadoSolicitud.EN_REPARACION}:
+            raise ValueError(
+                f"Solo se pueden usar repuestos en diagnóstico o reparación (Estado actual: '{self._estado.value}')."
+            )
         detalle = DetalleRepuesto(repuesto, cantidad)
         repuesto.usar_repuesto(cantidad)
         self.repuestosUtilizados.append(detalle)
