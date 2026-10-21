@@ -162,6 +162,8 @@ class Solicitud:
             raise ValueError(
                 f"Transición inválida: '{self._estado.value}' → '{nuevo_estado.value}'."
             )
+        if nuevo_estado == EstadoSolicitud.ASIGNADA and self._tecnico is None:
+            raise ValueError("Una solicitud solo pasa a 'Asignada' mediante asignar_tecnico().")
         self._historial.Apilar(self._estado)
         self._estado = nuevo_estado
 
@@ -193,9 +195,9 @@ class Solicitud:
             raise ValueError(
                 "El técnico no está disponible o alcanzó su límite de trabajos activos."
             )
-        self.CambiarEstado(EstadoSolicitud.ASIGNADA)
-        self._tecnico = nuevo_tecnico
         nuevo_tecnico.asignar_trabajo()
+        self._tecnico = nuevo_tecnico
+        self.CambiarEstado(EstadoSolicitud.ASIGNADA)
 
     def agregar_repuesto(self, repuesto: Repuestos, cantidad: int):
         self._exigir_modificable()
@@ -207,14 +209,22 @@ class Solicitud:
         repuesto.usar_repuesto(cantidad)
         self.repuestosUtilizados.append(detalle)
 
-    def finalizar_solicitud(self, calificacion_tecnico: Optional[float] = None):
+    def finalizar_solicitud(self):
         if self._estado not in {EstadoSolicitud.EN_DIAGNOSTICO, EstadoSolicitud.EN_REPARACION}:
             raise ValueError(
                 f"No se puede finalizar una solicitud en estado '{self._estado.value}'."
             )
-        if self._tecnico is not None:
-            self._tecnico.finalizar_trabajo(nueva_calificacion=calificacion_tecnico)
         self.CambiarEstado(EstadoSolicitud.LISTA_PARA_ENTREGAR)
+
+    def registrar_entrega(self, calificacion_tecnico: int):
+        if self._estado != EstadoSolicitud.LISTA_PARA_ENTREGAR:
+            raise ValueError(
+                f"Solo se puede entregar una solicitud 'Lista para entregar' (estado actual: '{self._estado.value}')."
+            )
+        if self._tecnico is None:
+            raise ValueError("La solicitud no tiene técnico asignado.")
+        self._tecnico.finalizar_trabajo(calificacion_tecnico)
+        self.CambiarEstado(EstadoSolicitud.ENTREGADA)
 
     def cancelar_solicitud(self):
         self.CambiarEstado(EstadoSolicitud.CANCELADA)

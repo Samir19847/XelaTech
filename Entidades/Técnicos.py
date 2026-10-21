@@ -70,14 +70,15 @@ class Tecnico(Persona):
         self.trabajosActivos += 1
 
 
-    def finalizar_trabajo(self, nueva_calificacion: float = None):
+    def finalizar_trabajo(self, calificacion: int):
         if self.trabajosActivos <= 0:
             raise ValueError("El técnico no tiene trabajos activos para finalizar.")
+        if isinstance(calificacion, bool) or not isinstance(calificacion, int) or not (1 <= calificacion <= 5):
+            raise ValueError("La calificación debe ser un número entero entre 1 y 5.")
+        total = self.calificacionPromedio * self.serviciosFinalizados + calificacion
         self.trabajosActivos -= 1
         self.serviciosFinalizados += 1
-        if nueva_calificacion is not None:
-            total = (self.calificacionPromedio * (self.serviciosFinalizados - 1)) + nueva_calificacion
-            self.calificacionPromedio = total / self.serviciosFinalizados
+        self.calificacionPromedio = total / self.serviciosFinalizados
 
     def liberar_trabajo(self):
         if self.trabajosActivos <= 0:
