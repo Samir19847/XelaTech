@@ -1,7 +1,9 @@
 from Entidades.Equipo import Equipo
 from Entidades.Cliente import Cliente
+from Entidades.Enum import TipoEquipo
 
 class Impresora(Equipo):
+    ESPECIALIDAD_REQUERIDA = "Impresoras"
     def __init__(
         self,
         codigoInterno: str,
@@ -11,9 +13,9 @@ class Impresora(Equipo):
         propietario: Cliente,
         estadoFisico: str,
         accesoriosEntregados: str,
-        tipoInyeccion: str = "Tinta Contínua"
+        tipoInyeccion: str = "Tinta Contínua",
     ):
-        super().__init__(codigoInterno, numeroSerie, marca, modelo, propietario, "Impresora", estadoFisico, accesoriosEntregados)
+        super().__init__(codigoInterno, numeroSerie, marca, modelo, propietario, TipoEquipo.IMPRESORA, estadoFisico, accesoriosEntregados)
         self.tipoInyeccion = tipoInyeccion
 
     @property

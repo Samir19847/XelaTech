@@ -62,21 +62,19 @@ class Tecnico(Persona):
         self._calificacionPromedio = float(calificacion)
 
     def puede_recibir_solicitud(self) -> bool:
-        return self.disponible and (self.trabajosActivos < Tecnico.LIMITE_TRABAJOS_ACTIVOS)
+        return self.disponible and not self.cargaCompleta
     
     def asignar_trabajo(self):
         if not self.puede_recibir_solicitud():
             raise ValueError(f"No se puede asignar la solicitud. El técnico está indisponible o alcanzó el límite de {Tecnico.LIMITE_TRABAJOS_ACTIVOS} trabajos activos.")
         self.trabajosActivos += 1
-        if self.trabajosActivos == Tecnico.LIMITE_TRABAJOS_ACTIVOS:
-            self.disponible = False
+
 
     def finalizar_trabajo(self, nueva_calificacion: float = None):
         if self.trabajosActivos <= 0:
             raise ValueError("El técnico no tiene trabajos activos para finalizar.")
         self.trabajosActivos -= 1
         self.serviciosFinalizados += 1
-        self.disponible = True
         if nueva_calificacion is not None:
             total = (self.calificacionPromedio * (self.serviciosFinalizados - 1)) + nueva_calificacion
             self.calificacionPromedio = total / self.serviciosFinalizados
@@ -85,3 +83,7 @@ class Tecnico(Persona):
         if self.trabajosActivos <= 0:
             raise ValueError("El técnico no tiene trabajos activos para liberar.")
         self.trabajosActivos -= 1
+
+    @property
+    def cargaCompleta(self) -> bool:
+        return self.trabajosActivos >= Tecnico.LIMITE_TRABAJOS_ACTIVOS
