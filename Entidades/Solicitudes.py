@@ -147,7 +147,9 @@ class Solicitud:
     def total(self) -> float:
         costo_revision = self.equipo.calcular_costo_revision()
         return self.costoManoObra + self.costoRepuestos + costo_revision
-
+    @property
+    def historialEstados(self) -> List[EstadoSolicitud]:
+        return self._historial.ObtenerHistorialCompleto()
     def _exigir_modificable(self):
         if self._estado in Solicitud.ESTADOS_FINALES:
             raise ValueError(f"La solicitud está '{self._estado.value}' y ya no admite cambios.")
@@ -164,6 +166,8 @@ class Solicitud:
             )
         if nuevo_estado == EstadoSolicitud.ASIGNADA and self._tecnico is None:
             raise ValueError("Una solicitud solo pasa a 'Asignada' mediante asignar_tecnico().")
+        if nuevo_estado in {EstadoSolicitud.EN_REPARACION, EstadoSolicitud.LISTA_PARA_ENTREGAR} and not self._diagnostico:
+            raise ValueError("Registre el diagnóstico antes de continuar con la reparación o la entrega.")
         self._historial.Apilar(self._estado)
         self._estado = nuevo_estado
 

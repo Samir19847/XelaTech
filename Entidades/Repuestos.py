@@ -103,8 +103,6 @@ class Repuestos:
             )
         self.existencia -= cantidad
         self.cantidadUtilizada += cantidad
-        if self.existencia <= self.existenciaMinima:
-            print(
-                f"⚠️ ALERTA DE STOCK: El repuesto '{self.nombre}' está en o por debajo del mínimo\n"
-                f"(Stock actual: {self.existencia}, Mínimo: {self.existenciaMinima})."
-            )
+    @property
+    def bajoMinimo(self) -> bool:
+        return self.existencia <= self.existenciaMinima
