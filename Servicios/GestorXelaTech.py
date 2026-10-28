@@ -14,9 +14,11 @@ from Estructuras.ColaSolicitudes import ColaSolicitudes
 from Estructuras.MatrizCargaSemanal import MatrizCargaSemanal
 from Estructuras.EstadisticasCalificaciones import EstadisticasCalificaciones
 from Algoritmos.AlgoritmosBusqueda import AlgoritmosBusqueda
+from Algoritmos.AlgoritmosOrdenamiento import AlgoritmosOrdenamiento
 
 
 class GestorXelaTech:
+
     CLASES_EQUIPO = {
         TipoEquipo.COMPUTADORA_PORTATIL: ComputadoraPortatil,
         TipoEquipo.COMPUTADORA_ESCRITORIO: ComputadoraEscritorio,
@@ -44,6 +46,7 @@ class GestorXelaTech:
 
     @staticmethod
     def _obtener(lista: List[Any], valor: str, key: Callable[[Any], str]) -> Optional[Any]:
+        """Búsqueda secuencial exacta (sin distinguir mayúsculas) sobre datos reales."""
         coincidencias = AlgoritmosBusqueda.busqueda_secuencial(
             lista, valor.strip(), key=key, busqueda_parcial=False
         )
@@ -76,7 +79,6 @@ class GestorXelaTech:
             if clase.ESPECIALIDAD_REQUERIDA not in especialidades:
                 especialidades.append(clase.ESPECIALIDAD_REQUERIDA)
         return especialidades
-
     def registrar_cliente(self, codigo: str, nombre: str, telefono: str,
                           correo: str, tipo: TipoCliente) -> Cliente:
         cliente = Cliente(
@@ -123,7 +125,6 @@ class GestorXelaTech:
         return tecnico
 
     def establecer_disponibilidad(self, codigo: str, disponible: bool) -> Tecnico:
-        """Disponibilidad administrativa (vacaciones, permiso...). La carga completa se calcula aparte."""
         tecnico = self._exigir(self._tecnicos, codigo, lambda t: t.código, "un técnico")
         tecnico.disponible = disponible
         return tecnico
@@ -158,6 +159,7 @@ class GestorXelaTech:
 
     def listar_equipos(self) -> List[Equipo]:
         return list(self._equipos)
+
     def registrar_repuesto(self, codigo: str, nombre: str, categoria: CategoriaRepuesto, existencia: int,
                            costo_unitario: float, precio_venta: float, existencia_minima: int = 1) -> Repuestos:
         repuesto = Repuestos(
@@ -200,6 +202,7 @@ class GestorXelaTech:
     def historial_de(self, codigo: str) -> List[EstadoSolicitud]:
         return self._exigir_solicitud(codigo).historialEstados
 
+
     def encolar_solicitud(self, codigo: str) -> Solicitud:
         solicitud = self._exigir_solicitud(codigo)
         if solicitud.estado != EstadoSolicitud.RECIBIDA:
@@ -240,7 +243,7 @@ class GestorXelaTech:
                 f"La solicitud '{solicitud.codigoSolicitud}' sigue en la cola."
             )
         solicitud.asignar_tecnico(tecnico)
-        self._cola.Desencolar()
+        self._cola.Desencolar() 
         indice_tecnico = self._tecnicos.index(tecnico)
         self._matriz.registrar_asignacion(indice_tecnico, indice_dia)
         self._asignaciones[solicitud.codigoSolicitud] = (indice_tecnico, indice_dia)
@@ -284,6 +287,7 @@ class GestorXelaTech:
         return None
 
     def entregar_solicitud(self, codigo: str, calificacion: int) -> Solicitud:
+        """Lista para entregar -> Entregada. Registra la calificación del técnico."""
         solicitud = self._exigir_solicitud(codigo)
         solicitud.registrar_entrega(calificacion)
         self._estadisticas.RegistrarCalificaciones(calificacion)
@@ -333,3 +337,70 @@ class GestorXelaTech:
             "conteo": self._estadisticas.ObtenerResumenConteo(),
             "promedio": self._estadisticas.ObtenerPromedio(),
         }
+
+    @staticmethod
+    def _resultado_orden(algoritmo: str, criterio: str, descendente: bool, datos: List[Any]) -> Dict:
+        return {
+            "algoritmo": algoritmo,
+            "criterio": criterio,
+            "orden": "descendente" if descendente else "ascendente",
+            "descripcion": AlgoritmosOrdenamiento.describir_ordenamiento(algoritmo, criterio, descendente),
+            "datos": datos,
+        }
+
+    def ordenar_solicitudes_por_costo(self, descendente: bool = True) -> Dict:
+        AlgoritmosOrdenamiento.exigir_datos_suficientes(self._solicitudes, 2, "solicitudes")
+        datos = AlgoritmosOrdenamiento.bubble_sort(self._solicitudes, key=lambda s: s.total, descendente=descendente)
+        return self._resultado_orden(AlgoritmosOrdenamiento.BUBBLE_SORT, "Costo total", descendente, datos)
+
+    def ordenar_tecnicos_por_servicios(self, descendente: bool = True) -> Dict:
+        AlgoritmosOrdenamiento.exigir_datos_suficientes(self._tecnicos, 2, "técnicos")
+        datos = AlgoritmosOrdenamiento.selection_sort(self._tecnicos, key=lambda t: t.serviciosFinalizados, descendente=descendente)
+        return self._resultado_orden(AlgoritmosOrdenamiento.SELECTION_SORT, "Servicios finalizados", descendente, datos)
+
+    def ordenar_repuestos_por_existencia(self, descendente: bool = False) -> Dict:
+        AlgoritmosOrdenamiento.exigir_datos_suficientes(self._repuestos, 2, "repuestos")
+        datos = AlgoritmosOrdenamiento.shell_sort(self._repuestos, key=lambda r: r.existencia, descendente=descendente)
+        return self._resultado_orden(AlgoritmosOrdenamiento.SHELL_SORT, "Existencia disponible", descendente, datos)
+
+    def ordenar_solicitudes_por_fecha(self, descendente: bool = False) -> Dict:
+        AlgoritmosOrdenamiento.exigir_datos_suficientes(self._solicitudes, 2, "solicitudes")
+        datos = AlgoritmosOrdenamiento.quick_sort(self._solicitudes, key=lambda s: s.fechaHoraRecepcion, descendente=descendente)
+        return self._resultado_orden(AlgoritmosOrdenamiento.QUICK_SORT, "Fecha de recepción", descendente, datos)
+
+
+    def buscar_clientes_por_nombre(self, texto: str) -> List[Cliente]:
+        texto = self._limpiar(texto, "El texto de búsqueda")
+        if not texto:
+            raise ValueError("Escriba el texto a buscar.")
+        return AlgoritmosBusqueda.busqueda_secuencial(
+            self._clientes, texto, key=lambda c: c.nombreCompleto, busqueda_parcial=True
+        )
+
+    def buscar_solicitudes_por_estado(self, estado: EstadoSolicitud) -> List[Solicitud]:
+        if not isinstance(estado, EstadoSolicitud):
+            raise ValueError("Seleccione un estado válido.")
+        return AlgoritmosBusqueda.busqueda_secuencial(
+            self._solicitudes, estado.value, key=lambda s: s.estado.value, busqueda_parcial=False
+        )
+
+    def buscar_equipos_por_marca(self, texto: str) -> List[Equipo]:
+        texto = self._limpiar(texto, "La marca")
+        if not texto:
+            raise ValueError("Escriba la marca a buscar.")
+        return AlgoritmosBusqueda.busqueda_secuencial(
+            self._equipos, texto, key=lambda e: e.marca, busqueda_parcial=True
+        )
+
+    def buscar_solicitud_binaria(self, codigo: str, ordenar_antes: bool = True) -> Optional[Solicitud]:
+        codigo = self._limpiar(codigo, "El código")
+        if not codigo:
+            raise ValueError("Escriba el código a buscar.")
+        if not self._solicitudes:
+            raise ValueError("No hay solicitudes registradas.")
+        clave = lambda s: s.codigoSolicitud.lower()
+        if ordenar_antes:
+            datos = AlgoritmosOrdenamiento.shell_sort(self._solicitudes, key=clave)
+        else:
+            datos = list(self._solicitudes)
+        return AlgoritmosBusqueda.busqueda_binaria(datos, codigo.lower(), key=clave)
