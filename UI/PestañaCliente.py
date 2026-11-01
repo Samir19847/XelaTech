@@ -2,13 +2,12 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QFormLayout, QLineEdit, QComb
                              QTableWidget, QTableWidgetItem, QMessageBox, QHeaderView, QAbstractItemView)
 from Entidades.Enum import TipoCliente
 
-
-class PestañaClientes(QWidget):
+class PestanaClientes(QWidget):
     def __init__(self, gestor):
         super().__init__()
         self.gestor = gestor
         self._construir()
-        self.actualizar_tabla()
+        self.refrescar()
 
     def _construir(self):
         self.txt_codigo = QLineEdit()
@@ -46,14 +45,14 @@ class PestañaClientes(QWidget):
             QMessageBox.warning(self, "No se pudo registrar", str(error))
             return
         self.limpiar_formulario()
-        self.actualizar_tabla()
+        self.refrescar()
 
     def limpiar_formulario(self):
         for campo in (self.txt_codigo, self.txt_nombre, self.txt_telefono, self.txt_correo):
             campo.clear()
         self.cmb_tipo.setCurrentIndex(0)
 
-    def actualizar_tabla(self):
+    def refrescar(self):
         clientes = self.gestor.listar_clientes()
         self.tabla.setRowCount(len(clientes))
         for fila, c in enumerate(clientes):
