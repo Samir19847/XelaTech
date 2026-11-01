@@ -13,7 +13,7 @@ class VentanaPrincipal(QMainWindow):
     def __init__(self, gestor):
         super().__init__()
         self.gestor = gestor
-        self.setWindowTitle("XelaTech Soporte")
+        self.setWindowTitle("::: [ D E R E N ] ::: XelaTech Soporte ::: [ D E R E N ] :::")
         self.resize(1200, 780)
         self.pestanas = QTabWidget()
         self.pestanas.addTab(PestañaClientes(gestor), "Clientes")
