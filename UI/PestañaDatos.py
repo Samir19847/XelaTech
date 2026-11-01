@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdi
 from Servicios.GeneradorDatos import GeneradorDatos
 from UI.Utilidades import crear_tabla, llenar_tabla, leer_entero
 
-class PestanaDatos(QWidget):
+class PestañaDatos(QWidget):
     def __init__(self, gestor):
         super().__init__()
         self.gestor = gestor

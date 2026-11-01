@@ -4,7 +4,7 @@ from Entidades.Enum import EstadoSolicitud
 from Servicios.Reportes import Reportes
 from UI.Utilidades import crear_tabla, llenar_tabla
 
-class PestanaReportes(QWidget):
+class PestañaReportes(QWidget):
     def __init__(self, gestor):
         super().__init__()
         self.gestor = gestor

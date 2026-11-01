@@ -4,7 +4,7 @@ from Entidades.Enum import EstadoSolicitud
 from UI.Utilidades import crear_tabla, llenar_tabla, con_seleccion, leer_decimal, leer_entero
 
 
-class PestanaAtencion(QWidget):
+class PestañaAtencion(QWidget):
     def __init__(self, gestor):
         super().__init__()
         self.gestor = gestor

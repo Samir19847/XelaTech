@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QFormLayout, QLineEdit, QComb
 from Entidades.Enum import NivelPrioridad
 from UI.Utilidades import crear_tabla, llenar_tabla, con_seleccion
 
-class PestanaSolicitudes(QWidget):
+class PestañaSolicitudes(QWidget):
     def __init__(self, gestor):
         super().__init__()
         self.gestor = gestor
