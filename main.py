@@ -1,6 +1,6 @@
 import sys
-from Servicios.GestorXelaTech import GestorXelaTech
 from PyQt6.QtWidgets import QApplication
+from Servicios.GestorXelaTech import GestorXelaTech
 from UI.VentanaPrincipal import VentanaPrincipal
 
 def main():
@@ -9,6 +9,7 @@ def main():
     ventana = VentanaPrincipal(gestor)
     ventana.show()
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
