@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QFormLayout, QLineEdit, QComb
                              QTableWidget, QTableWidgetItem, QMessageBox, QHeaderView, QAbstractItemView)
 from Entidades.Enum import TipoCliente
 
-class PestanaClientes(QWidget):
+class PestañaClientes(QWidget):
     def __init__(self, gestor):
         super().__init__()
         self.gestor = gestor
