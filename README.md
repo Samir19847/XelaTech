@@ -80,7 +80,7 @@ Para probar el programa rápidamente, usa la pestaña **Datos de prueba**.
 
 ## Reglas del negocio
 
-**Estados de una solicitud**: Recibida → En espera → Asignada → En diagnóstico → En reparación → Lista para entregar → Entregada. En cualquier momento antes de entregarla puede quedar Cancelada.
+**Estados de una solicitud**: Recibida → En espera → Asignada → En diagnóstico → En reparación → Lista para entregar → Entregada. Puede cancelarse hasta la etapa de diagnóstico; una vez en reparación ya no.
 
 - Un equipo solo puede tener **una solicitud activa** a la vez.
 - Una solicitud solo se crea para un **equipo que pertenezca al cliente** indicado.
