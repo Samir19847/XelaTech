@@ -105,3 +105,7 @@ Para probar el programa rápidamente, usa la pestaña **Datos de prueba**.
 7. Se exige un diagnóstico antes de reparar o dejar lista una solicitud.
 
 ---
+
+Uso de inteligencia artificial
+
+Se utilizó un asistente de IA como apoyo durante el desarrollo: para analizar el enunciado, revisar y corregir la lógica, guiar la construcción de la interfaz y la creación del Readme.
